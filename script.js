@@ -1,22 +1,30 @@
+const Vite = document.getElementById("vite");
+const Punteggio = document.getElementById("punteggio");
+let vite = 3;
+let punteggio = 0;
+
+Vite.innerText = "Vite: " + vite;
+Punteggio.innerText = "Punteggio: " + punteggio;
+
+
 const navicella = document.getElementById("navicella"); // prendo elemento navicella dal DOM
 const sfondo = document.getElementById("sfondo"); // prendo elemento sfondo dal DOM
 
 let posY = 0;
 let posX = 0;
 const velocitàUfoX = 10;
-const velocitàUfoY = 1;
-const velystelle = 5;
-
+const velocitàUfoY = 10;
+let velystelle = Math.random() * 3 + 2; // genero una velocità casuale per le stelle
 
 
 //attendo che la pagina sia completamente caricata per posizionare i miei elementi
 window.onload = function() { // quando la pagina è completamente caricata, viene eseguita questa funzione
-    posX = (sfondo.offsetWidth / 2) - (navicella.offsetWidth / 2);  // prendo la posizione x della navicella rispetto al suo elemento padre, in questo caso lo sfondo, offsetLeft è la distanza tra il bordo sinistro dell'elemento e il bordo sinistro del suo elemento padre
+    posX = (sfondo.offsetWidth / 2) - (navicella.offsetWidth / 2); 
     navicella.style.left = posX + "px"; // imposto la posizione x della navicella in base alla posizione x calcolata, in questo modo la navicella parte al centro dello sfondo
     pYufo = 2;
     
 }
-
+//creazione ufo
 let ufi = [];
 let soglia = Math.random() * 100;
 let cont = 0;
@@ -31,7 +39,7 @@ function creaUfo() {
     el.style.left = x + "px";
     el.style.top = y + "px";
     let direzione = Math.random() < 0.5 ? -1 : 1; // genero una direzione casuale per l'ufo, se il numero generato è minore di 0.5, la direzione sarà -1, altrimenti sarà 1
-    el.direzione = direzione; // assegno la direzione all'elemento dell'ufo, in questo modo posso utilizzarla in seguito per muovere l'ufo
+    el.direzione = direzione; 
     sfondo.appendChild(el);
     
 
@@ -53,12 +61,12 @@ setInterval(() => {
             soglia = Math.random() * 100;
 
     }
-}, 50);
+}, 200);
 
 //movimento ufo
 setInterval(() => {
     ufi.forEach((ufo, index) => {
-    
+        let ufoColpito = false;
         ufo.x = ufo.x + (velocitàUfoX * (ufo.direzione));
         ufo.el.style.left = ufo.x + "px";
         
@@ -75,54 +83,135 @@ setInterval(() => {
         if(ufo.y > (sfondo.offsetHeight)) {
             ufo.el.remove();
             ufi.splice(index, 1);
-        }    
+        }
+        if(ufo.el.offsetLeft > navicella.offsetLeft + navicella.offsetWidth || ufo.el.offsetLeft + ufo.el.offsetWidth < navicella.offsetLeft || ufo.el.offsetTop > navicella.offsetTop + navicella.offsetHeight || ufo.el.offsetTop + ufo.el.offsetHeight < navicella.offsetTop) {
+            // se l'ufo non colpisce la navicella, non succede nulla
+        } else {
+            // se l'ufo colpisce la navicella, viene rimosso l'ufo dal DOM e viene decrementato il numero di vite
+            ufoColpito = true;
+            vite --; 
+            Vite.innerText = "Vite: " + vite; 
+            if(vite <= 0) {
+                alert("Game Over! Il tuo punteggio è: " + punteggio); 
+                window.location.reload(); 
+            }
+            
+        }   
+        if(ufoColpito) {
+            ufo.el.remove();
+            ufi.splice(index, 1);
+        }
     });
 }, 70);
 
 
+//creo meteorite
+let meteoriti = [];
+
+function creaMeteorite() {
+    const el = document.createElement("img");
+    el.src = "img/meteorite.png";
+    el.className = "meteorite";
+    el.style.position = "absolute";
+    el.style.width = 130 + "px"; 
+    el.style.height = 130 + "px";
+    el.style.left = Math.random() * (sfondo.offsetWidth - 130) + "px";
+    el.style.top = -130 + "px";
+    velYmeteorite = Math.random() * 15 + 20; // genero una velocità casuale per il meteorite
+    let x = parseFloat(el.style.left);
+    let y = parseFloat(el.style.top);
+    sfondo.appendChild(el);
+
+    const oggettoMeteorite = {
+        x: x,
+        y: y, 
+        el: el,
+        velYmeteorite: velYmeteorite
+    };
+    meteoriti.push(oggettoMeteorite);
+    return oggettoMeteorite;
+}
+
+function spawnMeteorite() {
+    creaMeteorite();
+    setTimeout(spawnMeteorite, Math.random() * 6000 + 10000); // genero un tempo casuale 
+}
+
+spawnMeteorite(); // avvio la generazione dei meteoriti
+
+
+//movimento meteorite
+setInterval(() => {
+    meteoriti.forEach((meteorite, index) => {
+        rimuoviMeteorite = false;
+        meteorite.y += meteorite.velYmeteorite; 
+        meteorite.el.style.top = meteorite.y + "px";
+        
+        if(meteorite.y > sfondo.offsetHeight + (meteorite.el.offsetHeight * 2)) {
+            meteorite.el.remove();
+            meteoriti.splice(index, 1);
+        }
+        if(meteorite.el.offsetLeft > navicella.offsetLeft + navicella.offsetWidth || meteorite.el.offsetLeft + meteorite.el.offsetWidth < navicella.offsetLeft || meteorite.el.offsetTop > navicella.offsetTop + navicella.offsetHeight || meteorite.el.offsetTop + meteorite.el.offsetHeight < navicella.offsetTop) {
+            // se il meteorite non colpisce la navicella, non succede nulla
+        } else {
+            // se il meteorite colpisce la navicella, viene rimosso il meteorite dal DOM e viene decrementato il numero di vite
+            meteorite.el.remove();
+            meteoriti.splice(index, 1);
+            vite --; 
+            Vite.innerText = "Vite: " + vite; 
+            if(vite <= 0) {
+                alert("Game Over! Il tuo punteggio è: " + punteggio); 
+                window.location.reload(); 
+            }
+        }
+        meteorite.el.velYmeteorite = Math.random() * 15 + 20; // genero una velocità casuale per il meteorite
+    });
+}, 50);
 
 //creo sfondo con stelle casuali
 let stelle = [];
 
 for(let i = 0; i < 50; i++) {
-    const stella = document.createElement("div"); // creo un nuovo elemento div per la stella
-    stella.className = "stella"; // imposto la classe della stella per poterla stilizzare con il CSS
-    stella.style.position = "absolute"; // imposto la posizione della stella a absolute per poterla posizionare in modo preciso all'interno dello sfondo
-    stella.style.width = "2px"; // imposto la larghezza della stella a 2px
-    stella.style.height = "2px"; // imposto l'altezza della stella a 2px
-    stella.style.backgroundColor = "white"; // imposto il colore di sfondo della stella a bianco
-    stella.style.left = Math.random() * sfondo.offsetWidth + "px"; // imposto la posizione x della stella in modo casuale all'interno dello sfondo, Math.random() restituisce un numero casuale tra 0 e 1, quindi moltiplicando per la larghezza dello sfondo, ottengo un numero casuale tra 0 e la larghezza dello sfondo
-    stella.style.top = Math.random() * sfondo.offsetHeight + "px"; // imposto la posizione y della stella in modo casuale all'interno dello sfondo, Math.random() restituisce un numero casuale tra 0 e 1, quindi moltiplicando per l'altezza dello sfondo, ottengo un numero casuale tra 0 e l'altezza dello sfondo
-    stella.style.borderRadius = "50%"; // imposto il border-radius della stella a 50% per renderla rotonda
-    sfondo.appendChild(stella); // aggiungo la stella al DOM, in questo modo viene visualizzata nello sfondo
-    stelle.push(stella); // aggiungo la stella all'array delle stelle, in questo modo posso tenerne traccia e modificarle in seguito se necessario
+    const stella = document.createElement("div"); 
+    stella.className = "stella"; 
+    stella.style.position = "absolute"; 
+    stella.style.width = Math.random() * 3 + 2 + "px"; 
+    stella.style.height = Math.random() * 3 + 2 + "px"; 
+    stella.style.backgroundColor = "white";
+    stella.style.left = Math.random() * sfondo.offsetWidth + "px"; 
+    stella.style.top = Math.random() * sfondo.offsetHeight + "px"; 
+    stella.style.borderRadius = "50%";
+    sfondo.appendChild(stella); 
+    stelle.push(stella); 
 }
 //movimento delle stelle
 setInterval(() => {
     stelle.forEach(stella => {
-        stella.style.top = (parseFloat(stella.style.top) + velystelle) + "px"; // ogni 50 millisecondi, la posizione y della stella viene aumentata di velystelle, in questo modo le stelle si muovono verso il basso
-        if(parseFloat(stella.style.top) > sfondo.offsetHeight) { // se la posizione y della stella è maggiore dell'altezza dello sfondo, significa che la stella è uscita dallo schermo, quindi viene riposizionata in alto con una nuova posizione x casuale
-            stella.style.top = "0px"; // imposto la posizione y della stella a 0px, in questo modo la stella parte da sopra lo sfondo
-            stella.style.left = Math.random() * sfondo.offsetWidth + "px"; // imposto la posizione x della stella in modo casuale all'interno dello sfondo, Math.random() restituisce un numero casuale tra 0 e 1, quindi moltiplicando per la larghezza dello sfondo, ottengo un numero casuale tra 0 e la larghezza dello sfondo
+        stella.style.top = (parseFloat(stella.style.top) + velystelle) + "px"; 
+        if(parseFloat(stella.style.top) > sfondo.offsetHeight) { 
+            stella.style.top = 0 + "px";
+            stella.style.left = Math.random() * sfondo.offsetWidth + "px"; 
+            velystelle = Math.random() * 3 + 2; 
         }
+        
     });
 }, 50);
 
 
-
-let razzi = []; // creo un array per tenere traccia dei razzi
+//creazione razzo
+let razzi = [];
 
 function creaRazzo(x, y) {
-    const el = document.createElement("img"); // creo un nuovo elemento div per il razzo
-    el.src = "img/razzo.png"; // imposto l'immagine del razzo
-    el.className = "razzo"; // imposto la classe del razzo per poterlo stilizzare con il CSS
-    el.style.position = "absolute"; // imposto la posizione del razzo a absolute per poterlo posizionare in modo preciso all'interno dello sfondo
-    el.style.width = "20px"; // imposto la larghezza del razzo a 30px
-    el.style.height = "auto"; // imposto l'altezza del razzo a auto per mantenere le proporzioni dell'immagine
-    el.style.left = x + "px"; // imposto la posizione x del razzo in base alla posizione x passata come parametro
-    el.style.top = y + "px"; // imposto la posizione y del razzo in base alla posizione y passata come parametro
+    const el = document.createElement("img"); 
+    el.src = "img/razzo.png";   
+    el.className = "razzo";
+    el.style.position = "absolute";
+    el.style.width = "20px";
+    el.style.height = "auto"; 
+    el.style.left = x + "px";
+    el.style.top = y + "px"; 
     
-    sfondo.appendChild(el); // aggiungo il razzo al DOM, in questo modo viene visualizzato nello sfondo
+    sfondo.appendChild(el); 
     
     return {
         x: x,
@@ -133,7 +222,7 @@ function creaRazzo(x, y) {
 
     
 }
-
+//movimento navicella e sparo razzo
 window.onkeydown = function(event) {
     const velocità = 40;
     
@@ -144,13 +233,13 @@ window.onkeydown = function(event) {
     } else if(event.key === "ArrowLeft") {
         posX -= velocità;
     } else if(event.key === " ") {
-        let x = posX + navicella.offsetWidth / 2 - 10; // calcolo la posizione x del razzo in base alla posizione della navicella, in questo modo il razzo parte dalla fine della navicella
-        let y = navicella.offsetTop; // imposto la posizione y del razzo alla base della navicella
-        razzi.push(creaRazzo(x, y)); // creo un nuovo razzo e lo aggiungo all'array dei razzi
+        let x = posX + navicella.offsetWidth / 2 - 10; 
+        let y = navicella.offsetTop; 
+        razzi.push(creaRazzo(x, y)); 
     }
 
     
-    if(posX > (sfondo.offsetWidth - navicella.offsetWidth)) {  // questo controllo serve per evitare che la navicella esca fuori dallo sfondo, offsetWidth è la larghezza dell'elemento, quindi se la posizione della navicella è maggiore della larghezza dello sfondo meno la larghezza della navicella, allora la posizione della navicella viene impostata alla larghezza dello sfondo meno la larghezza della navicella, in questo modo la navicella non può uscire fuori dallo sfondo
+    if(posX > (sfondo.offsetWidth - navicella.offsetWidth)) {  
             posX = sfondo.offsetWidth - navicella.offsetWidth;
     } else if(posX < 0) {
             posX = 0;
@@ -159,29 +248,43 @@ window.onkeydown = function(event) {
     navicella.style.left = posX + "px";
     
 }
-
+//movimento razzo e collisione con ufo
 setInterval(() => {
     
         razzi.forEach((razzo, index) => {
+            let razzoRimosso = false;
+            razzo.y -= razzo.vely; 
+            
             ufi.forEach((ufo, indexUfo) => {
                 if(razzo.el.offsetLeft > ufo.el.offsetLeft + ufo.el.offsetWidth || razzo.el.offsetLeft + razzo.el.offsetWidth < ufo.el.offsetLeft || razzo.el.offsetTop > ufo.el.offsetTop + ufo.el.offsetHeight || razzo.el.offsetTop + razzo.el.offsetHeight < ufo.el.offsetTop) {
                     // se il razzo non colpisce l'ufo, non succede nulla
                 } else {
                     // se il razzo colpisce l'ufo, viene rimosso sia il razzo che l'ufo dal DOM
-                    razzo.el.remove(); // rimuovo l'elemento del razzo dal DOM
-                    ufo.el.remove(); // rimuovo l'elemento dell'ufo dal DOM
-                    razzi.splice(index, 1); // rimuovo il razzo dall'array dei razzi
-                    ufi.splice(indexUfo, 1); // rimuovo l'ufo dall'array degli ufo
+                    razzoRimosso = true;
+                    ufo.el.remove(); 
+                    ufi.splice(indexUfo, 1); 
+                    punteggio += 10; 
+                    Punteggio.innerText = "Punteggio: " + punteggio; 
+                    if(punteggio >= 100) {
+                        alert("Hai vinto! Il tuo punteggio è: " + punteggio); 
+                        window.location.reload(); 
+                    }
                 }
+               
+
             });
-            razzo.y -= razzo.vely; // ogni 50 millisecondi, la posizione y del razzo viene diminuita di veloy, in questo modo il razzo si muove verso l'alto
-            
+            if(razzoRimosso) {
+                razzo.el.remove();
+                razzi.splice(index, 1);
+                return;
+            }
+                
             razzo.el.style.left = razzo.x + "px"; // la posizione x del razzo viene aggiornata in base alla posizione x del razzo
             razzo.el.style.top = razzo.y + "px"; // la posizione y del razzo viene aggiornata in base alla posizione y del razzo
 
             const rect = razzo.el.getBoundingClientRect();
-            if(rect.bottom < 0) { // se la posizione y del razzo è minore di 0, significa che il razzo è uscito dallo schermo, quindi viene rimosso dall'array dei razzi
-                razzo.el.remove(); // rimuovo l'elemento del razzo dal DOM
+            if(rect.bottom < 0) { 
+                razzo.el.remove(); 
                 razzi.splice(index, 1);
             }
 
@@ -189,10 +292,10 @@ setInterval(() => {
         });
     }, 50);
 
+
 document.addEventListener("keydown", (e) => {
     if(e.code === "Space") {
         e.preventDefault();
 
     }
     }); 
-
