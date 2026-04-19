@@ -21,7 +21,7 @@ body{
     color: white;
     font-family: 'Press Start 2P', cursive;
     font-size: 20px;
-    z-index: 3;
+    z-index: 1;
 }
 #punteggio{
     position: absolute;
@@ -30,7 +30,17 @@ body{
     color: white;
     font-family: 'Press Start 2P', cursive;
     font-size: 20px;
-    z-index: 3;
+    z-index: 1;
+}
+
+#utente{
+    position: absolute;
+    top: 20px;
+    left: 15px;
+    color: rgb(255, 0, 0);
+    font-family: 'Press Start 2P', cursive;
+    font-size: 20px;
+    z-index: 1;
 }
 
 #navicella{
@@ -39,6 +49,7 @@ body{
     z-index: 2;
     transition: all 0.2s linear;
     left: -200px;
+    
     
 }
 
@@ -113,3 +124,74 @@ body{
 
 }
 */
+
+.container{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5 !important;
+}
+
+.schermata_iniziale{
+    
+    position: absolute;
+    margin-top: 10% ;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Press Start 2P', cursive;
+    background-color: rgba(77, 77, 77, 0.182);
+    padding: 2rem;
+    border-radius: 30px;   
+    width: 50%;
+    left: 25%; 
+    z-index: 5 !important;
+}
+
+.gioco{
+    font-size: 1rem;    
+    color: rgb(167, 0, 0);
+    padding-bottom: 1rem;
+    text-align: center;
+    
+}
+
+.gioco h3{
+    padding-top: 2%;
+    font-size: 1rem;
+}
+
+.nome{
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+    
+}
+
+.nome input{
+    width: 100%;
+    height: 2rem;
+    padding: 1rem;
+    border-radius: 20px;
+    background-color: rgb(83, 82, 82);
+    color: rgb(217, 255, 0);
+    border: none;
+    
+    font-family: 'Press Start 2P', cursive; 
+}
+
+button{
+    width: 20%;
+    height: 2rem;
+    color: red;
+    font-weight: 900;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 70%;
+    background-color: yellow;
+    border: none;
+    border-radius: 10px;
+    margin-left: 21rem;
+    cursor: pointer;
+}
