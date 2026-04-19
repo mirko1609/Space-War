@@ -38,6 +38,7 @@ body{
     top: 65%;
     z-index: 2;
     transition: all 0.2s linear;
+    left: -200px;
     
 }
 
