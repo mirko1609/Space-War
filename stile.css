@@ -195,3 +195,92 @@ button{
     margin-left: 21rem;
     cursor: pointer;
 }
+
+.perdita{
+    font-family: 'Press Start 2P', cursive;
+    position: fixed;
+    top: 40%;
+    left: 30%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    
+}
+
+@keyframes perdita{
+    0%{ color: red;}
+    50%{ color: rgb(157 ,0 ,0);}
+    100%{ color: red;}
+}
+
+.lose{
+    animation: perdita 1s infinite;
+}
+
+.vittoria{
+    font-family: 'Press Start 2P', cursive;
+    position: fixed;
+    top: 40%;
+    left: 30%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    
+}
+
+@keyframes vittoria{
+    0%{ color: rgb(255, 255, 0);}
+    50%{ color: rgb(255, 255, 0, 0.5);}
+    100%{ color: rgb(255, 255, 0);}
+}
+
+.vittoria{
+    animation: vittoria 1s infinite;
+}
+
+.tasti{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    gap: 1rem;
+}
+
+.sinistra, .destra{
+    width: 10%;
+    
+}
+
+.sinistra, .destra, .spazio{
+    background-color: red;
+    border: 1px solid yellow;
+    text-align: center;
+    border-radius: 10px;
+    font-size: 80%;
+}
+
+.spazio{
+    height: 2rem;
+    width: 35%;
+    font-size: 70%;
+    
+}
+
+.spazio h2{
+    margin-top: 3%;
+}
+
+.comandi{
+    color: white;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 50%;
+    display: flex;
+    gap: 80%;
+    margin-right: 65%;
+    margin-bottom: 1%;   
+}

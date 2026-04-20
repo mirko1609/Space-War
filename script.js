@@ -1,4 +1,8 @@
-let velystelle = Math.random() * 3 + 2; // genero una velocità casuale per le stelle
+const loser = document.getElementsByClassName("perdita")[0];
+const winner = document.getElementsByClassName("vittoria")[0];
+loser.style.display = "none";
+winner.style.display = "none";
+let velystelle = 1;
 const sfondo = document.getElementById("sfondo"); // prendo elemento sfondo dal DOM
 
 document.addEventListener("keydown", (e) => {
@@ -26,13 +30,18 @@ for(let i = 0; i < 50; i++) {
     //movimento delle stelle
 setInterval(() => {
     stelle.forEach(stella => {
-        stella.style.top = (parseFloat(stella.style.top) + velystelle) + "px"; 
+        const distanza = 2;
+        if(parseFloat(stella.style.width) > 3) {
+            stella.style.top = (parseFloat(stella.style.top) + (velystelle + distanza)) + "px";
+        } else {
+            stella.style.top = (parseFloat(stella.style.top) + velystelle) + "px";
+        } 
         if(parseFloat(stella.style.top) > sfondo.offsetHeight) { 
             stella.style.top = 0 + "px";
             stella.style.left = Math.random() * sfondo.offsetWidth + "px"; 
-            velystelle = Math.random() * 3 + 2; 
-       }
             
+       }
+    
     });
 }, 50);
 
@@ -49,7 +58,25 @@ bottone.addEventListener("click", function() {
 });
 
 
+let intervalli = [];
+
 function startGame() {
+   
+
+    function fineGioco(){
+        intervalli.forEach(intervallo => clearInterval(intervallo));
+        intervalli = []; 
+
+        loser.style.display = "block";
+    }
+
+    function vittoriaGioco(){
+        intervalli.forEach(intervallo => clearInterval(intervallo));
+        intervalli = [];
+
+        winner.style.display = "block";
+    }
+
     const Vite = document.getElementById("vite");
     const Punteggio = document.getElementById("punteggio");
     let vite = 3;
@@ -104,7 +131,7 @@ function startGame() {
         return oggettoUfo;
     }
 
-    setInterval(() => {
+    intervalli.push(setInterval(() => {
         cont++;
         if(cont > soglia) {
                 creaUfo() 
@@ -112,10 +139,10 @@ function startGame() {
                 soglia = Math.random() * 100;
 
         }
-    }, 200);
+    }, 200));
 
     //movimento ufo
-    setInterval(() => {
+    intervalli.push(setInterval(() => {
         ufi.forEach((ufo, index) => {
             let ufoColpito = false;
             ufo.x = ufo.x + (velocitàUfoX * (ufo.direzione));
@@ -143,8 +170,7 @@ function startGame() {
                 vite --; 
                 Vite.innerText = "Vite: " + vite; 
                 if(vite <= 0) {
-                    alert("Game Over! Il tuo punteggio è: " + punteggio); 
-                    window.location.reload(); 
+                    fineGioco();
                 }
                 
             }   
@@ -153,7 +179,7 @@ function startGame() {
                 ufi.splice(index, 1);
             }
         });
-    }, 70);
+    }, 70));
 
 
     //creo meteorite
@@ -192,7 +218,7 @@ function startGame() {
 
 
     //movimento meteorite
-    setInterval(() => {
+    intervalli.push(setInterval(() => {
         meteoriti.forEach((meteorite, index) => {
             
             meteorite.y += meteorite.velYmeteorite; 
@@ -211,13 +237,13 @@ function startGame() {
                 vite --; 
                 Vite.innerText = "Vite: " + vite; 
                 if(vite <= 0) {
-                    alert("Game Over! Il tuo punteggio è: " + punteggio); 
-                    window.location.reload(); 
+                    fineGioco();
+                     
                 }
             }
             meteorite.el.velYmeteorite = Math.random() * 15 + 20; // genero una velocità casuale per il meteorite
         });
-    }, 50);
+    }, 50));
 
     //creo sfondo con stelle casuali
     
@@ -274,7 +300,7 @@ function startGame() {
         
     }
     //movimento razzo e collisione con ufo
-    setInterval(() => {
+    intervalli.push(setInterval(() => {
         
             razzi.forEach((razzo, index) => {
                 let razzoRimosso = false;
@@ -291,8 +317,7 @@ function startGame() {
                         punteggio += 10; 
                         Punteggio.innerText = "Punteggio: " + punteggio; 
                         if(punteggio >= 100) {
-                            alert("Hai vinto! Il tuo punteggio è: " + punteggio); 
-                            window.location.reload(); 
+                            vittoriaGioco();
                         }
                     }
                 
@@ -315,7 +340,7 @@ function startGame() {
 
                 
             });
-        }, 50);
+        }, 50));
     }
 
 
