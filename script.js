@@ -1,5 +1,6 @@
 const loser = document.getElementsByClassName("perdita")[0];
 const winner = document.getElementsByClassName("vittoria")[0];
+const riavvia = document.getElementsByClassName("ricomincia");
 loser.style.display = "none";
 winner.style.display = "none";
 let velystelle = 1;
@@ -48,26 +49,43 @@ setInterval(() => {
 const log = document.getElementsByClassName("container")[0];
 log.style.display = "block";
 const bottone = document.getElementsByClassName("bottone")[0];
-bottone.addEventListener("click", function() {
+
+function avviaGioco() {
     if(document.querySelector(".nome input").value === "") {
         alert("Inserisci il tuo nome per iniziare il gioco!"); 
         return;
     }
     startGame();
     log.style.display = "none";
+}
+bottone.addEventListener("click", avviaGioco);
+
+document.addEventListener("keydown", (e) => {
+    if(e.code === "Enter") {
+        avviaGioco();
+    }
 });
 
 
 let intervalli = [];
 
 function startGame() {
-   
+    
 
     function fineGioco(){
         intervalli.forEach(intervallo => clearInterval(intervallo));
         intervalli = []; 
-
         loser.style.display = "block";
+        riavvia[0].addEventListener("click", function() {
+            loser.style.display = "none";
+            window.location.reload();
+        });
+        document.addEventListener("keydown", (e) => {
+            if(e.code === "Enter") {
+                loser.style.display = "none";
+                window.location.reload();
+            }
+        });
     }
 
     function vittoriaGioco(){
@@ -75,6 +93,16 @@ function startGame() {
         intervalli = [];
 
         winner.style.display = "block";
+        riavvia[0].addEventListener("click", function() {
+            winner.style.display = "none";
+            window.location.reload();
+        });
+        document.addEventListener("keydown", (e) => {
+            if(e.code === "Enter") {
+                window.location.reload();
+                winner.style.display = "none";
+            }
+        });
     }
 
     const Vite = document.getElementById("vite");
@@ -90,17 +118,13 @@ function startGame() {
 
     const navicella = document.getElementById("navicella"); // prendo elemento navicella dal DOM
     
-
     let posX = 0;
     const velocitàUfoX = 10;
     const velocitàUfoY = 10;
     
-
-    
     posX = (sfondo.offsetWidth / 2) - (navicella.offsetWidth / 2); 
     navicella.style.left = posX + "px"; // imposto la posizione x della navicella in base alla posizione x calcolata, in questo modo la navicella parte al centro dello sfondo
-    pYufo = 2;
-        
+    pYufo = 2;  
     
     //creazione ufo
     let ufi = [];
@@ -109,7 +133,7 @@ function startGame() {
 
     function creaUfo() {
         const el = document.createElement("img");
-        el.src = "img/ufo.png";
+        el.src = "img/ufo2.png";
         el.style.position = "absolute";
         el.className = "ufo";
         let x = Math.random() * (sfondo.offsetWidth - el.offsetWidth);
@@ -139,7 +163,7 @@ function startGame() {
                 soglia = Math.random() * 100;
 
         }
-    }, 200));
+    }, 100));
 
     //movimento ufo
     intervalli.push(setInterval(() => {
@@ -181,19 +205,18 @@ function startGame() {
         });
     }, 70));
 
-
     //creo meteorite
     let meteoriti = [];
 
     function creaMeteorite() {
         const el = document.createElement("img");
-        el.src = "img/meteorite.png";
+        el.src = "img/meteorite2.png";
         el.className = "meteorite";
         el.style.position = "absolute";
-        el.style.width = 130 + "px"; 
-        el.style.height = 130 + "px";
-        el.style.left = Math.random() * (sfondo.offsetWidth - 130) + "px";
-        el.style.top = -130 + "px";
+        el.style.width = 150 + "px"; 
+        el.style.height = 150 + "px";
+        el.style.left = Math.random() * (sfondo.offsetWidth - 150) + "px";
+        el.style.top = -150 + "px";
         let velYmeteorite = Math.random() * 15 + 20; // genero una velocità casuale per il meteorite
         let x = parseFloat(el.style.left);
         let y = parseFloat(el.style.top);
@@ -215,7 +238,6 @@ function startGame() {
     }
 
     spawnMeteorite(); // avvio la generazione dei meteoriti
-
 
     //movimento meteorite
     intervalli.push(setInterval(() => {
@@ -245,20 +267,16 @@ function startGame() {
         });
     }, 50));
 
-    //creo sfondo con stelle casuali
-    
-
-
     //creazione razzo
     let razzi = [];
 
     function creaRazzo(x, y) {
         const el = document.createElement("img"); 
-        el.src = "img/razzo.png";   
+        el.src = "img/razzo3.png";   
         el.className = "razzo";
         el.style.position = "absolute";
-        el.style.width = "20px";
-        el.style.height = "auto"; 
+        
+        
         el.style.left = x + "px";
         el.style.top = y + "px"; 
         
@@ -284,7 +302,7 @@ function startGame() {
         } else if(event.key === "ArrowLeft") {
             posX -= velocità;
         } else if(event.key === " ") {
-            let x = posX + navicella.offsetWidth / 2 - 10; 
+            let x = posX + navicella.offsetWidth / 2 - 20; 
             let y = navicella.offsetTop; 
             razzi.push(creaRazzo(x, y)); 
         }
@@ -342,13 +360,3 @@ function startGame() {
             });
         }, 50));
     }
-
-
-
-
-
-
-
-
-
-

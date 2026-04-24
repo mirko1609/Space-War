@@ -37,7 +37,7 @@ body{
     position: absolute;
     top: 20px;
     left: 15px;
-    color: rgb(255, 0, 0);
+    color: rgb(229, 255, 0);
     font-family: 'Press Start 2P', cursive;
     font-size: 20px;
     z-index: 1;
@@ -51,6 +51,7 @@ body{
     left: -200px;
     
     
+    
 }
 
 #sfondo{
@@ -62,8 +63,8 @@ body{
 
 .razzo{
     position: absolute;
-    width: 30px;
-    height: auto;
+    width: 50px;
+    height: 100px;
     transition: all 0.5s;
     
     
@@ -71,7 +72,7 @@ body{
 
 .ufo{
     position: absolute;
-    width: 100px;
+    width: 110px;
     height: auto;
     transition: all 0.5s;
     z-index: 1;
@@ -81,7 +82,7 @@ body{
 .meteorite{
     z-index: 1;
     transition: all 0.5s linear;
-    transform: rotate(270deg);
+    /*transform: rotate(270deg);*/
 
 }
 /*
@@ -125,6 +126,17 @@ body{
 }
 */
 
+#terra{
+    position: absolute;
+    top: 5%;
+    right: 5%;
+    width: 120px;
+    height: 120px;
+    
+    
+    
+}
+
 .container{
     width: 100%;
     height: 100%;
@@ -162,6 +174,7 @@ body{
 .gioco h3{
     padding-top: 2%;
     font-size: 1rem;
+    
 }
 
 .nome{
@@ -175,25 +188,39 @@ body{
     height: 2rem;
     padding: 1rem;
     border-radius: 20px;
-    background-color: rgb(83, 82, 82);
+    background-color: rgba(62, 62, 62, 0.535);
     color: rgb(217, 255, 0);
     border: none;
     
     font-family: 'Press Start 2P', cursive; 
 }
 
-button{
+.bottone{
     width: 20%;
     height: 2rem;
-    color: red;
+    color: rgb(255, 238, 0);
     font-weight: 900;
     font-family: 'Press Start 2P', cursive;
     font-size: 70%;
-    background-color: yellow;
     border: none;
     border-radius: 10px;
     margin-left: 21rem;
     cursor: pointer;
+    border: 2px solid transparent;
+    background: linear-gradient(#111, #111) padding-box,
+              linear-gradient(90deg, red, orange, yellow, green, cyan, blue, rgb(255, 0, 38)) border-box;
+  
+  background-size: 300% 300%;
+  animation: rgbMove 10s linear infinite;
+}
+
+@keyframes rgbMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 300% 50%;
+  }
 }
 
 .perdita{
@@ -257,7 +284,7 @@ button{
 }
 
 .sinistra, .destra, .spazio{
-    background-color: red;
+    background-color: rgb(150, 0, 0);
     border: 1px solid yellow;
     text-align: center;
     border-radius: 10px;
@@ -283,4 +310,18 @@ button{
     gap: 80%;
     margin-right: 65%;
     margin-bottom: 1%;   
+}
+
+.ricomincia{
+    width: 10%;
+    height: 2rem;
+    color: rgb(200, 0, 0);
+    font-family: 'Press Start 2P', cursive;
+    font-size: 30%;
+    background-color: rgba(77, 77, 77, 0.512);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    margin-left: 30%;
 }
