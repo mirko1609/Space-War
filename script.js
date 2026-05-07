@@ -312,7 +312,7 @@ function transazione(){
     
     // BUG 7 FIX: uso una funzione nominata per poterla rimuovere dopo l'uso
     function avanzaTransazione(event){
-        if(event.key === " "){
+        if(event.key === "c"){
             window.removeEventListener("keydown", avanzaTransazione);
             startGame();
             schermataTransizione.style.display = "none";
