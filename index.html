@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="stile.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
     <title>Space War</title>
@@ -10,22 +10,21 @@
 </head>
 
 <body>
-    <div class="perdita">
-        <h1 class="lose">GAME OVER!</h1>
-        <button class="ricomincia">Gioca ancora!</button>
+    
+
+    <div class="luna">
+        <div class="b"></div>
+        <div class="p"></div>
+        
     </div>
 
-    <div class="vittoria">
-        <h1 class="win">
-            Vittoria!!
-        </h1>
-        <button class="ricomincia">Gioca ancora!</button>
-    </div>
-    
-    
-    
-    
-    <div class="container">
+
+    <div class="contenitoreSfondo">
+    <div id="sfondo">
+        <div id="navicella">
+            <img src="img/navicella2.png" alt="navicella" width="100px">
+        </div>
+        <div class="container">
         <div class="schermata_iniziale">
             <div class="gioco">
                 <h1>Space War</h1>
@@ -33,10 +32,11 @@
             </div>
 
             <div class="nome">
-                <input type="text" placeholder="Inserisci il tuo nome">
+                <input type="text" placeholder="Inserisci il tuo nome" required>    
+                <p class="errore">⚠ Questo campo è obbligatorio</p>
             </div>
             <button class="bottone">Combatti</button>
-            
+            <!--
             <div class="comandi">
                 <div class="muovi">
                     <h1>
@@ -71,28 +71,114 @@
                     </h2>
                 </div>
             </div>
-
+        -->
         </div>
 
+        </div>
+        <div class="perdita">
+            <h1 class="lose">GAME OVER!</h1>
+            <button class="ricomincia">Gioca ancora!</button>
+        </div>
+
+    <div class="vittoria">
+        <h1 class="win">
+            Vittoria!!
+        </h1>
+        <button class="ricomincia">Gioca ancora!</button>
+    </div>
+    
+    
+    <div class="container2">
+        <div class="transazione">
+            <div class="contenitore">
+                <h3 id="level"></h3>
+                <h1 id="PIANETA"></h1>
+                <h4 id="messaggio"></h4>
+                <p id="continua">Premi "Spazio" per continuare</p>
+            </div>
+        </div>
+    </div>    
         
-    </div>
-
-    <div class="luna">
-        <div class="b"></div>
-        <div class="p"></div>
-        <img src="img/terra.png" alt="terra" id="terra">
-    </div>
-
-    <div id="sfondo"></div>
     
-    <div id="navicella">
-        <img src="img/navicella2.png" alt="navicella" width="200px">
     </div>
-    <p id="vite"></p>
-    <p id="punteggio"></p>
-    <p id="utente"></p>
-
+    </div>
     
+
+
+    <div class="lateraleDestra">
+    <div class="logoBox">
+        <h1>SPACE</h1>
+        <h1>WAR</h1>
+        <h3>UNA LOTTA SPAZIALE</h3>
+    </div>
+
+    <div class="achievementsBox">
+        <h2>Achievements</h2>
+        <ul>
+            <li class="achievement" title="Abbatti 100 ufo senza perdere una vita">🏆 UFO HUNTER</li>
+            <li class="achievement" title="Sopravvivi a due livelli senza essere colpito da un meteorite">🏆 ASTEROID MASTER</li>
+            <li class="achievement" title="Sopravvivi 5 livelli con almeno 2 vite">🏆 SURVIVOR</li>
+            <li class="achievement" title="Finisci il gioco con tutte le vite">👑 SPACE RULER</li>
+        </ul>
+    </div>
+
+     <div class="descrizione">
+        <h4>
+            Una guerra contro gli ufo attraverso tutta la via lattea ti sta aspettando!
+        </h4>
+    </div>
+    </div>
+    <div class="lateraleSinistra">
+    
+    <!-- Astronauta -->
+    <div class="astronautaBox">
+        <p id="utente">ASTRONAUTA: -</p>
+    </div>
+
+    <!-- Menu -->
+    <div class="menuBox">
+        <button class="btnPausa" id="btnPausa">⏸ PAUSA</button>
+        <button class="btnComandi" id="btnComandi">🎮 COMANDI</button>
+        
+        <!-- pannello comandi, nascosto di default -->
+        <div class="pannelloComandi" id="pannelloComandi">
+            <p>← Muovi sinistra</p>
+            <p>→ Muovi destra</p>
+            <p>SPACE Spara</p>
+        </div>
+    </div>
+    
+    <div class="topScoreBox">
+        <h2>Top Score</h2>
+        <p id="topScore">0</p>
+    </div>
+
+    <!-- Statistiche -->
+    <div class="statsBox">
+        <p id="livelloStat">LIVELLO: -</p>
+        <p id="vite">VITE: -</p>
+        <p id="punteggio">PUNTEGGIO: -</p>
+    </div>
+
+</div>
+
+<!-- Schermata pausa -->
+<div class="schermataPausa" id="schermataPausa">
+    <div class="pausaBox">
+        <h1>⏸ PAUSA</h1>
+        <p>Premi Esc per riprendere</p>
+    </div>
+</div>
+
+<!-- controlli touch mobile -->
+<div class="controlliMobile">
+    <div class="areaGioco"></div>
+    <div class="areaControlli">
+        <img src="img/freccia.png" class="btnSinistra" id="btnSinistra">
+        <img src="img/sparo.png" class="btnSparo" id="btnSparo">
+        <img src="img/freccia.png" class="btnDestra freccaDestra" id="btnDestra">
+    </div>
+</div>
     <script src="script.js"></script>
 
 </body>
