@@ -121,7 +121,9 @@ function resetStelle(){
     });
     //navicella.style.top = "85%";
      // adatta in base alla risoluzione
-    if(window.innerWidth <= 1280) {
+    if(window.innerWidth <= 768) {
+        navicella.style.top = "85%";   // mobile portrait
+    } else if(window.innerWidth <= 1280) {
         navicella.style.top = "70%";
     } else if(window.innerWidth <= 1440) {
         navicella.style.top = "78%";
@@ -259,7 +261,73 @@ const livelli = [
         pianetaImg: "img/venere.png",
         ufoSpara: false,
         descrizione: "Gli ufo armati ti aspettano!!"
+    },
+    {
+        livelloCorrente: 3,
+        nome:           "Marte",
+        punteggioVincita: 240,
+        velocitàUfoX:   10,
+        velocitàUfoY:   6,
+        ufoSpawn:       70,
+        meteoriteSpawn: [6000, 10000],
+        pianetaImg:     "img/marte.png",
+        ufoSpara:       true,
+        velRazzoUfo:    15,
+        descrizione:    "Il pianeta rosso è pieno di ostacoli!"
+    },
+    {
+        livelloCorrente: 4,
+        nome:           "Giove",
+        punteggioVincita: 290,
+        velocitàUfoX:   11,
+        velocitàUfoY:   8,
+        ufoSpawn:       62,
+        meteoriteSpawn: [5000, 9000],
+        pianetaImg:     "img/giove.png",
+        ufoSpara:       true,
+        velRazzoUfo:    17,
+        descrizione:    "Il gigante del sistema solare! Sopravvivi se puoi."
+    },
+    {
+        livelloCorrente: 5,
+        nome:           "Saturno",
+        punteggioVincita: 350,
+        velocitàUfoX:   13,
+        velocitàUfoY:   9,
+        ufoSpawn:       45,
+        meteoriteSpawn: [4500, 8000],
+        pianetaImg:     "img/saturno.png",
+        ufoSpara:       true,
+        velRazzoUfo:    18,
+        descrizione:    "Gli anelli di Saturno nascondono trappole mortali!"
+    },
+    {
+        livelloCorrente: 6,
+        nome:           "Urano",
+        punteggioVincita: 410,
+        velocitàUfoX:   15,
+        velocitàUfoY:   10,
+        ufoSpawn:       40,
+        meteoriteSpawn: [4000, 7000],
+        pianetaImg:     "img/urano.png",
+        ufoSpara:       true,
+        velRazzoUfo:    20,
+        descrizione:    "Il pianeta ghiacciato ti congelerà i riflessi!"
+    },
+    {
+        livelloCorrente: 7,
+        nome:           "Nettuno",
+        punteggioVincita: 500,
+        velocitàUfoX:   16,
+        velocitàUfoY:   11,
+        ufoSpawn:       35,
+        meteoriteSpawn: [3500, 6000],
+        pianetaImg:     "img/nettuno.png",
+        ufoSpara:       true,
+        velRazzoUfo:    22,
+        descrizione:    "L'ultimo segreto del sistema solare. Nessuno è tornato!"
     }
+
 ]
 //gestiamo il livello corrente
 let livelloCorrente = 0
@@ -270,6 +338,7 @@ meteoriti = [];
 razzi = [];
 
 let pianeta;
+let intervalloPianeta;
 function creoPianeti(){
     const config = livelli[livelloCorrente];
     if(pianeta) pianeta.remove();
@@ -290,8 +359,8 @@ function creoPianeti(){
 function muovoPianeti(pianeta){
     const config = livelli[livelloCorrente];
     let posizione = -150;
-    
-    setInterval(() => {
+    clearInterval(intervalloPianeta);
+    intervalloPianeta = setInterval(() => {
         posizione += 6;
         pianeta.style.top = posizione + "px";
         if(posizione >= 50){
@@ -309,7 +378,23 @@ function transazione(){
     LIVELLO.innerText = "LIVELLO: " + config.livelloCorrente;
     Pianeta.innerText = config.nome;
     didascalia.innerText = config.descrizione;
-    
+    if(pianeta) {
+        clearInterval(intervalloPianeta);
+
+        let posizioneUscita = parseFloat(pianeta.style.top) || 50;
+
+        const intervalloUscita = setInterval(() => {
+            posizioneUscita += 10;
+            pianeta.style.top = posizioneUscita + "px";
+
+            if(posizioneUscita >= window.innerHeight + 150) {
+                clearInterval(intervalloUscita);
+                pianeta.remove();
+                pianeta = null;
+            }
+        }, 50);
+    }
+
     // BUG 7 FIX: uso una funzione nominata per poterla rimuovere dopo l'uso
     function avanzaTransazione(event){
         if(event.key === "c"){
@@ -420,14 +505,20 @@ function startGame() {
     if(livello) livello.innerText = "LIVELLO: " + config.nome;
     if(livelloSfondo) livelloSfondo.innerText = config.nome
     
-    // BUG 5 FIX: rimosse le variabili locali velocitàUfoX e velocitàUfoY inutilizzate
+    //telefono
+    const hudV = document.getElementById("hudVite");
+    const hudP = document.getElementById("hudPunteggio");
+    const hudL = document.getElementById("hudLivello");
+    if(hudV) hudV.innerText = "Vite: " + vite;
+    if(hudP) hudP.innerText = "Pts: " + punteggio;
+    if(hudL) hudL.innerText = config.nome;
+    
     
     posX = (sfondo.offsetWidth / 2) - (navicella.offsetWidth / 2); 
     navicella.style.left = posX + "px"; // imposto la posizione x della navicella in base alla posizione x calcolata, in questo modo la navicella parte al centro dello sfondo
     pYufo = 2;  
     
     //creazione ufo
-    // BUG 1 FIX: uso l'array globale ufi invece di dichiararne uno locale
     ufi = [];
     let soglia = Math.random() * 100;
     let cont = 0;
@@ -485,7 +576,7 @@ function startGame() {
             ufo.y = ufo.y + config.velocitàUfoY;
             ufo.el.style.top = ufo.y + "px";
             
-            if(ufo.y > (sfondo.offsetHeight)) {
+            if(ufo.y > (sfondo.offsetHeight + 100)) {
                 ufo.el.remove();
                 ufi.splice(index, 1);
             }
@@ -540,7 +631,7 @@ function startGame() {
             meteorite.y += meteorite.velYmeteorite; 
             meteorite.el.style.top = meteorite.y + "px";
             
-            if(meteorite.y > sfondo.offsetHeight + (meteorite.el.offsetHeight * 2)) {
+            if(meteorite.y > sfondo.offsetHeight +150 + (meteorite.el.offsetHeight * 2)) {
                 meteorite.el.remove();
                 meteoriti.splice(index, 1);
             }
@@ -580,11 +671,14 @@ function startGame() {
     //movimento razzo e collisione con ufo
     intervalli.push(setInterval(() => {
             if(inPausa) return;
+            let livelloFinito = false;
             razzi.forEach((razzo, index) => {
+                if(livelloFinito) return;
                 let razzoRimosso = false;
                 razzo.y -= razzo.vely; 
                 
                 ufi.forEach((ufo, indexUfo) => {
+                    if(livelloFinito) return;
                     if(razzo.el.offsetLeft > ufo.el.offsetLeft + ufo.el.offsetWidth || razzo.el.offsetLeft + razzo.el.offsetWidth < ufo.el.offsetLeft || razzo.el.offsetTop > ufo.el.offsetTop + ufo.el.offsetHeight || razzo.el.offsetTop + razzo.el.offsetHeight < ufo.el.offsetTop) {
                         // se il razzo non colpisce l'ufo, non succede nulla
                     } else {
@@ -594,7 +688,9 @@ function startGame() {
                         ufi.splice(indexUfo, 1); 
                         punteggio += 10; 
                         Punteggio.innerText = "Punteggio: " + punteggio; 
+                        if(hudP) hudP.innerText = "Pts: " + punteggio; 
                         if(punteggio >= config.punteggioVincita) {
+                            livelloFinito = true;
                             cambioLivello = true;
                             inputAttivo = false;
                             intervalli.forEach(intervallo => clearInterval(intervallo))
