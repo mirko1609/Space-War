@@ -61,6 +61,7 @@ schermataTransizione.style.display = "none";
 
 //----CREAZIONE SFONDO 
 let stelle = [];
+let nebulose = [];
 function creoSfondo(){
     for(let i = 0; i < 50; i++) {
         const stella = document.createElement("div"); 
@@ -77,6 +78,20 @@ function creoSfondo(){
         sfondo.appendChild(stella); 
         stelle.push(stella); 
     }
+
+    function aggiungiNebulose() {
+    const coloriNeb = ["neb-viola", "neb-blu"];
+    for(let i = 0; i < 4; i++) {
+        const neb = document.createElement("div");
+        neb.className = `nebulosa ${coloriNeb[i]}`;
+        neb.style.left = Math.random() * 70 + "%";
+        neb.style.top = (Math.random() * -100) + "%"; // Partono sopra il bordo del gioco
+        sfondo.appendChild(neb);
+        nebulose.push(neb);
+    }
+}
+    aggiungiNebulose();
+
         //movimento delle stelle
     setInterval(() => {
         stelle.forEach(stella => {
@@ -91,9 +106,23 @@ function creoSfondo(){
                 stella.style.left = Math.random() * sfondo.offsetWidth + "px"; 
                 
         }
+
         
         });
+
+        nebulose.forEach(neb => {
+            let topVal = parseFloat(neb.style.top) || 0;
+            // Si muove al 10% della velocità delle stelle per l'effetto parallasse
+            neb.style.top = (topVal + (velystelle * 0.1)) + "px";
+
+            // Se esce dal basso, ricompare in alto
+            if (topVal > sfondo.offsetHeight) {
+                neb.style.top = "-500px";
+                neb.style.left = Math.random() * 70 + "%";
+            }
+        });
     }, 50);
+
 }
 creoSfondo();
 //---BOOST ALLE STELLE
@@ -500,17 +529,17 @@ function startGame() {
     const utente = document.querySelector(".nome input").value || "Sconosciuto"; // prendo il valore dell'input del nome utente, se è vuoto, viene impostato come "Sconosciuto"
     Utente.innerText = "Astronauta: " + utente;
     let livello = document.getElementById("level");
-    Vite.innerText = "Vite: " + vite;
-    Punteggio.innerText = "Punteggio: " + punteggio;
+    Vite.innerText = "❤️ VITE: " + vite;
+    Punteggio.innerText = "⭐ PUNTEGGIO: " + punteggio;
     if(livello) livello.innerText = "LIVELLO: " + config.nome;
-    if(livelloSfondo) livelloSfondo.innerText = config.nome
+    if(livelloSfondo) livelloSfondo.innerText = "🌎 " + config.nome
     
     //telefono
     const hudV = document.getElementById("hudVite");
     const hudP = document.getElementById("hudPunteggio");
     const hudL = document.getElementById("hudLivello");
-    if(hudV) hudV.innerText = "Vite: " + vite;
-    if(hudP) hudP.innerText = "Pts: " + punteggio;
+    if(hudV) hudV.innerText = "❤️ VITE: " + vite;
+    if(hudP) hudP.innerText = "⭐ PT: " + punteggio;
     if(hudL) hudL.innerText = config.nome;
     
     
@@ -590,7 +619,8 @@ function startGame() {
                 setTimeout(() => {
                     navicella.classList.remove("danno");
                 }, 500);
-                Vite.innerText = "Vite: " + vite; 
+                Vite.innerText = "❤️ VITE: " + vite; 
+                if(hudV) hudV.innerText = "❤️ VITE: " + vite;
                 if(vite <= 0) {
 					livelloCorrente = 0;
                     fineGioco();
@@ -646,7 +676,8 @@ function startGame() {
                 setTimeout(() => {
                     navicella.classList.remove("danno");
                 }, 500);
-                Vite.innerText = "Vite: " + vite; 
+                Vite.innerText = "❤️ VITE: " + vite; 
+                if(hudV) hudV.innerText = "❤️ VITE: " + vite;
                 if(vite <= 0) {
 					livelloCorrente = 0;
                     fineGioco();
@@ -687,8 +718,8 @@ function startGame() {
                         ufo.el.remove(); 
                         ufi.splice(indexUfo, 1); 
                         punteggio += 10; 
-                        Punteggio.innerText = "Punteggio: " + punteggio; 
-                        if(hudP) hudP.innerText = "Pts: " + punteggio; 
+                        Punteggio.innerText = "⭐ PUNTEGGIO: " + punteggio; 
+                        if(hudP) hudP.innerText = "⭐ PT: " + punteggio; 
                         if(punteggio >= config.punteggioVincita) {
                             livelloFinito = true;
                             cambioLivello = true;
