@@ -720,6 +720,7 @@ function startGame() {
                         punteggio += 10; 
                         Punteggio.innerText = "⭐ PUNTEGGIO: " + punteggio; 
                         if(hudP) hudP.innerText = "⭐ PT: " + punteggio; 
+                        controllaAchievement();
                         if(punteggio >= config.punteggioVincita) {
                             livelloFinito = true;
                             cambioLivello = true;
@@ -759,7 +760,20 @@ function startGame() {
                 
             });
         }, 50));
+
+        
+
     }
+
+function controllaAchievement() {
+    if (punteggio >= 100){
+            const cacciatore = document.getElementsByClassName("achievement")[0];
+            cacciatore.innerText = "🏆 UFO HUNTER ✔️";
+            cacciatore.style.fontSize = "0.6rem";
+            cacciatore.style.color = "lime";
+        }
+        
+}
 
     // controlli touch mobile
 const btnSinistra = document.getElementById("btnSinistra");
