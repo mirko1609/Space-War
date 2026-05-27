@@ -816,3 +816,31 @@ if(btnSinistra) {
     razzi.push(creaRazzo(x, y));
 });
 }
+
+function dati() {
+    const parametri = {
+
+    };
+
+    const url = new url();
+    url.search = new URLSearchParams(parametri).toString();
+
+    fetch(url)
+        .then(response => {
+            if(!response.ok) {
+                throw new Error('Errore HTTP nel server: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("risposta ricevuta da Vercel API: ", data);
+            if(data.success) {
+                console.log("Dati ricevuti correttamente.");
+            }else {
+                console.error("Errore nei dati ricevuti: ", data.error);
+            }   
+        })
+        .catch(error => {
+            console.error("Errore:", error);
+        });
+}
