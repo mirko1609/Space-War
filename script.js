@@ -1,3 +1,5 @@
+const nome_gioco = "Space War";
+
 let cambioLivello = false;
 let posX = 0
 const loser = document.getElementsByClassName("perdita")[0];
@@ -819,10 +821,13 @@ if(btnSinistra) {
 
 function dati() {
     const parametri = {
+		nomeGioco: nome_gioco,
+		nomeSquadra: Utente,
+		punteggio: punteggio
 
     };
 
-    const url = new url();
+    const url = new url("https://arcade3D.vercel.app/api/assegna-punti");
     url.search = new URLSearchParams(parametri).toString();
 
     fetch(url)
