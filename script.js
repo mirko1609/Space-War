@@ -822,8 +822,8 @@ if(btnSinistra) {
 function dati() {
     const parametri = {
 		nomeGioco: nome_gioco,
-		nomeSquadra: Utente,
-		punteggio: punteggio
+		nomeSquadra: utente,
+		punteggio: Punteggio
 
     };
 
