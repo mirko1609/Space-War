@@ -849,3 +849,4 @@ function dati() {
             console.error("Errore:", error);
         });
 }
+dati();
