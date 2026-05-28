@@ -763,8 +763,8 @@ function startGame() {
             });
         }, 50));
 
-        
-
+	
+	dati();
     }
 
 function controllaAchievement() {
@@ -849,4 +849,4 @@ function dati() {
             console.error("Errore:", error);
         });
 }
-dati();
+
