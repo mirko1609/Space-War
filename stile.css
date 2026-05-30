@@ -28,7 +28,7 @@ body{
     position: absolute;
     top: 85%;
     z-index: 2;
-    transition: all 0.2s linear;
+    /*transition: all 0.2s linear;*/
     left: -500px;  
     
 }

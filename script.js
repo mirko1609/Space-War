@@ -132,7 +132,7 @@ function boost(){
     inputAttivo = false;
     intervalli.forEach(intervallo => clearInterval(intervallo));
     intervalli = [];
-    document.querySelectorAll(".ufo, .meteorite, .razzo").forEach(el => el.remove());
+    document.querySelectorAll(".ufo, .meteorite, .razzo, .razzoUfo").forEach(el => el.remove());
 
     stelle.forEach(stella => {
         velystelle = 10;
@@ -192,17 +192,21 @@ bottone.addEventListener("click", avviaGioco);
 document.addEventListener("keydown", avviaGiocoEnter);
 
 
+
 //--- IN CASO DI PERDITA
 function fineGioco(){
     inputAttivo = false;
     intervalli.forEach(intervallo => clearInterval(intervallo));
     intervalli = []; 
-    document.querySelectorAll(".ufo, .meteorite, .razzo").forEach(el => el.remove());
+    document.querySelectorAll(".ufo, .meteorite, .razzo, .razzoUfo").forEach(el => el.remove());
 
     // BUG 1 FIX: svuoto gli array globali, non quelli locali di startGame
     ufi = [];
     meteoriti = [];
     razzi = [];
+    razziUfo = [];
+
+    dati(); // invio dati al server
 
     loser.style.display = "block";
 
@@ -233,13 +237,16 @@ function vittoriaGioco(){
     inputAttivo = false;
     intervalli.forEach(intervallo => clearInterval(intervallo));
     intervalli = [];
-    document.querySelectorAll(".ufo, .meteorite, .razzo").forEach(el => el.remove());
+    document.querySelectorAll(".ufo, .meteorite, .razzo, .razzoUfo").forEach(el => el.remove());
 
     // BUG 1 FIX: svuoto gli array globali, non quelli locali di startGame
     ufi = [];
     meteoriti = [];
     razzi = [];
-        
+    razziUfo = [];
+
+    dati(); // invio dati al server
+
     winner.style.display = "block";
 
     // BUG 4 FIX: uso una funzione nominata così posso rimuoverla dopo il primo click/tasto
@@ -267,6 +274,28 @@ function vittoriaGioco(){
 }
 
 
+//razzi ufo
+function creaRazzoUfo(x, y) {
+    const el = document.createElement("img");
+    el.className = "razzoUfo";
+    el.src = "img/razzo3.png";
+    el.style.position = "absolute";
+    el.style.width = "30px";
+    el.style.height = "60px";
+    el.style.transform = "rotate(180deg)";
+    el.style.left = x + "px";
+    el.style.top = y + "px";
+    el.style.transition = "all 0.5s linear";
+    sfondo.appendChild(el);
+
+    return {
+        x: x,
+        y: y,
+        el: el
+    };
+}
+
+
 
 const livelli = [
     {
@@ -278,7 +307,8 @@ const livelli = [
         ufoSpawn: 80, // più basso, più frequente
         meteoriteSpawn: [8000, 14000],
         pianetaImg: "img/mercurio.png",
-        ufoSpara: false,
+        ufoSpara: true,
+        velRazzoUfo: 10,
         descrizione: "Il pianeta più vicino al sole. Veloce ed insidioso"
     },
     {
@@ -290,7 +320,8 @@ const livelli = [
         ufoSpawn: 75,
         meteoriteSpawn: [7000, 12000],
         pianetaImg: "img/venere.png",
-        ufoSpara: false,
+        ufoSpara: true,
+        velRazzoUfo: 12,
         descrizione: "Gli ufo armati ti aspettano!!"
     },
     {
@@ -365,8 +396,9 @@ let livelloCorrente = 0
 
 // BUG 1 FIX: dichiaro ufi, meteoriti, razzi a livello globale così fineGioco/vittoriaGioco li raggiungono
 let ufi = [];
-meteoriti = [];
-razzi = [];
+let meteoriti = [];
+let razzi = [];
+let razziUfo = [];
 
 let pianeta;
 let intervalloPianeta;
@@ -402,40 +434,46 @@ function muovoPianeti(pianeta){
 
 //---UNA SCHERMATA DI TRANSIZIONE TRA UN LIVELLO E UN ALTRO.
 function transazione(){
-    const config = livelli[livelloCorrente]
-        
+    const config = livelli[livelloCorrente];
     boost();
     schermataTransizione.style.display = "flex";
     LIVELLO.innerText = "LIVELLO: " + config.livelloCorrente;
     Pianeta.innerText = config.nome;
     didascalia.innerText = config.descrizione;
+
+    // fase 1: il vecchio pianeta esce dal basso
     if(pianeta) {
         clearInterval(intervalloPianeta);
-
         let posizioneUscita = parseFloat(pianeta.style.top) || 50;
-
         const intervalloUscita = setInterval(() => {
-            posizioneUscita += 10;
+            posizioneUscita += 8;
             pianeta.style.top = posizioneUscita + "px";
-
             if(posizioneUscita >= window.innerHeight + 150) {
                 clearInterval(intervalloUscita);
                 pianeta.remove();
                 pianeta = null;
+
+                // fase 2: il nuovo pianeta entra dall'alto
+                creoPianeti();
+                muovoPianeti(pianeta);
             }
         }, 50);
+    } else {
+        // primo avvio, nessun vecchio pianeta
+        creoPianeti();
+        muovoPianeti(pianeta);
     }
 
-    // BUG 7 FIX: uso una funzione nominata per poterla rimuovere dopo l'uso
     function avanzaTransazione(event){
         if(event.key === "c"){
             window.removeEventListener("keydown", avanzaTransazione);
-            startGame();
             schermataTransizione.style.display = "none";
+            startGame();
         }
     }
     window.addEventListener("keydown", avanzaTransazione);
 }
+
 
     function creaRazzo(x, y) {
         const el = document.createElement("img"); 
@@ -482,6 +520,8 @@ function transazione(){
         meteoriti.push(oggettoMeteorite);
         return oggettoMeteorite;
     }
+
+let sparando = false;
 function gestisciTastiera(event) {
         
         const velocità = 40;
@@ -492,7 +532,8 @@ function gestisciTastiera(event) {
                 
             } else if(event.key === "ArrowLeft") {
                 posX -= velocità;
-            } else if(event.key === " ") {
+            } else if(event.key === " " && !sparando) {
+                sparando = true;
                 let x = posX + navicella.offsetWidth / 2 - 13; 
                 let y = navicella.offsetTop; 
                 razzi.push(creaRazzo(x, y)); 
@@ -509,15 +550,17 @@ function gestisciTastiera(event) {
         
         
     }
+window.addEventListener("keyup", (e) => {
+    if(e.key === " ") sparando = false;
+});
 
+let vite = 3;
 let punteggio = 0;
 let intervalli = [];
 //----- LOGICA GIOCO
 function startGame() {
     cambioLivello = false;
     document.getElementById("topScore").innerText = localStorage.getItem("topScore") || 0;
-	creoPianeti();
-	muovoPianeti(pianeta);
     const config = livelli[livelloCorrente];
     inputAttivo = true;
     velystelle = 1;
@@ -525,7 +568,7 @@ function startGame() {
     if(livelloCorrente === 0) punteggio = 0;
     const Vite = document.getElementById("vite");
     const Punteggio = document.getElementById("punteggio");
-    let vite = 3;
+    if(livelloCorrente === 0) vite = 3;
     const Utente = document.getElementById("utente");
     let livelloSfondo = document.getElementById("livelloStat");
     const utente = document.querySelector(".nome input").value || "Sconosciuto"; // prendo il valore dell'input del nome utente, se è vuoto, viene impostato come "Sconosciuto"
@@ -635,6 +678,75 @@ function startGame() {
             }
         });
     }, 70));
+
+    // sparo ufo
+    razziUfo = [];
+
+if(config.ufoSpara) {
+    // ogni tot, un ufo casuale spara
+    let ultimoSparo = 0;
+const cooldownSparo = 3000; // millisecondi tra un colpo e l'altro
+
+intervalli.push(setInterval(() => {
+    if(inPausa) return;
+    if(ufi.length === 0) return;
+
+    const ora = Date.now();
+    if(ora - ultimoSparo < cooldownSparo) return; // troppo presto
+    ultimoSparo = ora;
+
+    // solo 1 ufo casuale spara
+    const ufoSparante = ufi[Math.floor(Math.random() * ufi.length)];
+    const rx = ufoSparante.x + ufoSparante.el.offsetWidth / 2 - 13;
+    const ry = ufoSparante.y + ufoSparante.el.offsetHeight;
+    razziUfo.push(creaRazzoUfo(rx, ry));
+
+}, 1200 + (7 - livelloCorrente) * 200)); // controlla ogni 3 secondi
+
+    // movimento razzi ufo e collisione con navicella
+    intervalli.push(setInterval(() => {
+        if(inPausa) return;
+
+        razziUfo.forEach((razzo, index) => {
+        razzo.y += config.velRazzoUfo;
+        razzo.el.style.top = razzo.y + "px";   // ← aggiorna top
+        razzo.el.style.left = razzo.x + "px";  // ← aggiorna left
+
+        // esce dal basso → rimosso
+        if(razzo.y > sfondo.offsetHeight + 50) {
+            razzo.el.remove();
+            razziUfo.splice(index, 1);
+            return;
+        }
+// collisione con navicella - usa coordinate dirette
+const navX = posX;
+const navY = navicella.offsetTop;
+const navW = navicella.offsetWidth;
+const navH = navicella.offsetHeight;
+
+const colpisce = !(
+    razzo.x > navX + navW ||
+    razzo.x + 30 < navX ||
+    razzo.y > navY + navH ||
+    razzo.y + 60 < navY
+);
+            if(colpisce) {
+                razzo.el.remove();
+                razziUfo.splice(index, 1);
+                vite--;
+                navicella.classList.add("danno");
+                setTimeout(() => navicella.classList.remove("danno"), 500);
+                Vite.innerText = "❤️ VITE: " + vite;
+                const hudV = document.getElementById("hudVite");
+                if(hudV) hudV.innerText = "❤️ VITE: " + vite;
+                if(vite <= 0) {
+                    livelloCorrente = 0;
+                    fineGioco();
+                }
+            }
+        });
+    }, 50));
+}
 
     //creo meteorite
     // BUG 1 FIX: uso l'array globale meteoriti invece di dichiararne uno locale
@@ -763,8 +875,8 @@ function startGame() {
             });
         }, 50));
 
-	
-	dati();
+        
+
     }
 
 function controllaAchievement() {
@@ -804,15 +916,16 @@ if(btnSinistra) {
     // sparo
     btnSparoEl.addEventListener("touchstart", (e) => {
     e.preventDefault();
-    
-    // se la schermata di transizione è visibile, va avanti invece di sparare
+
+    // se la schermata di transizione è visibile, si comporta come il tasto C
     if(schermataTransizione.style.display === "flex") {
-        startGame();
         schermataTransizione.style.display = "none";
+        startGame();
         return;
     }
-    
+
     // altrimenti spara normalmente
+    if(!inputAttivo) return;
     let x = posX + navicella.offsetWidth / 2 - 13;
     let y = navicella.offsetTop;
     razzi.push(creaRazzo(x, y));
@@ -821,13 +934,13 @@ if(btnSinistra) {
 
 function dati() {
     const parametri = {
-		nomeGioco: nome_gioco,
-		nomeSquadra: utente,
-		punteggio: Punteggio
+        nomeGioco: nome_gioco,
+        nomeSquadra: document.querySelector(".nome input").value || "Sconosciuto",
+        punteggio: punteggio
 
     };
 
-    const url = new url("https://arcade3D.vercel.app/api/assegna-punti");
+    const url = new URL("https://arcade3d.vercel.app/api/assegna-punti");
     url.search = new URLSearchParams(parametri).toString();
 
     fetch(url)
@@ -849,4 +962,3 @@ function dati() {
             console.error("Errore:", error);
         });
 }
-
